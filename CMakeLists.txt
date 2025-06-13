@@ -3,7 +3,9 @@ project(RemoveElementsFromFile)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(RemoveElementsFromFile main.cpp)
+add_executable(RemoveElementsFromFile main.cpp
+        FileHandler.cpp
+        FileHandler.h)
 
 configure_file(Test.txt Test.txt COPYONLY)
 configure_file(Test2.txt Test2.txt COPYONLY)
