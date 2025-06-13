@@ -9,11 +9,8 @@ int main() {
     filePath = "Test.txt";  // Test only
 
     FileHandler rFileHandler(filePath);
-    String file1 = rFileHandler.GetFileBuffer();
-    String file2 = rFileHandler.GetMessageToDeleteBuffer();
-
-    std::cout << file1 << std::endl;
-    std::cout << file2 << std::endl;
+    if ( rFileHandler.StartRemovingContentFromFile() )
+        std::cout << "\n***** Finished removing content *****" << std::endl;
 
     return 0;
 }

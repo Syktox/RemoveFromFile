@@ -9,3 +9,4 @@ add_executable(RemoveElementsFromFile main.cpp
 
 configure_file(Test.txt Test.txt COPYONLY)
 configure_file(Test2.txt Test2.txt COPYONLY)
+configure_file(Test3.txt Test3.txt COPYONLY)

@@ -3,18 +3,18 @@
 FileHandler::FileHandler(PATH& filepath) : fsFilePath               (filepath)
                                         , bMessageToDelete          (false)
                                         , StrMessageToDeleteBuffer  ()
-                                        , StrFileBuffer             ()
+                                        , vecFileBuffer             ()
 {
     std::fstream file(fsFilePath, std::ios::in);
-    SplitFile(file, StrFileBuffer, StrMessageToDeleteBuffer);
+    SplitFile(file, vecFileBuffer, StrMessageToDeleteBuffer);
 }
 
-void FileHandler::SplitFile(std::fstream& file, String& fileBuffer, String& MessageToDeleteBuffer)
+void FileHandler::SplitFile(std::fstream& file, std::vector<String>& fileBuffer, String& MessageToDeleteBuffer)
 {
     std::cout << "Checking if file is valid" << std::endl;
     if (file.is_open())
     {
-        std::cout << "File valid!\nOpened file" << std::endl;
+        std::cout << "File valid!\n" << std::endl;
         String StrLine;
 
         while (!file.eof())
@@ -31,9 +31,40 @@ void FileHandler::SplitFile(std::fstream& file, String& fileBuffer, String& Mess
             if (bMessageToDelete)
                 MessageToDeleteBuffer += StrLine;
             else
-                fileBuffer += StrLine;
+            {
+                fileBuffer.emplace_back(StrLine);
+            }
+
         }
         file.close();
-        std::cout << "Closed file" << std::endl;
     }
+    else
+        std::cout << "File invalid!" << std::endl;
+}
+
+bool FileHandler::StartRemovingContentFromFile()
+{
+    int nCurrentFile = 1;
+
+    for (auto& files : vecFileBuffer)
+    {
+        auto start = std::chrono::high_resolution_clock::now();
+        std::thread RemoveContentThread(&FileHandler::RemoveContent, this, std::ref(files), std::ref(StrMessageToDeleteBuffer));
+        RemoveContentThread.join();
+        auto stop = std::chrono::high_resolution_clock::now();
+        std::cout << "Thread took " << (stop - start) << " for this task" << std::endl;
+
+        // Finished File output
+        std::cout << "Finished File: " << nCurrentFile << "/" << vecFileBuffer.size() << "\n" << std::endl;
+        nCurrentFile++;
+    }
+
+
+
+    return true;
+}
+
+void FileHandler::RemoveContent(String& file, String& messageToDelete)
+{
+    std::cout << "Removed content from " << file;
 }
