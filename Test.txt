@@ -1,3 +1,4 @@
 Test2.txt
 
-Hallo
+Hallo ich möchte diesen Text aus allen Dateien löschen.
+Ich wenn ich weiß, dass wird nichts mehr.

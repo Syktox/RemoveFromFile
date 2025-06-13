@@ -28,9 +28,11 @@ int main() {
             getline(file, line);
             std::cout << line << std::endl;
 
-            // Splitter
+            // logic for file / add new file when its not a empty line
             if (line.empty())
                 bMessageToDelete = true;
+            else
+                line.append("\n");
 
             // write message to delete in a buffer
             if (bMessageToDelete)
@@ -41,8 +43,5 @@ int main() {
         file.close();
         std::cout << "Closed file" << std::endl;
     }
-
-    std::cout << files;
-
     return 0;
 }
