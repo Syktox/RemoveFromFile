@@ -59,12 +59,21 @@ bool FileHandler::StartRemovingContentFromFile()
         nCurrentFile++;
     }
 
-
-
     return true;
 }
 
 void FileHandler::RemoveContent(String& file, String& messageToDelete)
 {
+    std::fstream fileToRemoveContent(file, std::ios::in | std::ios::out);
+    if (fileToRemoveContent.is_open())
+    {
+        char ch;
+        while (fileToRemoveContent.get(ch))
+        {
+            std::cout << messageToDelete[0];
+        }
+
+        fileToRemoveContent.close();
+    }
     std::cout << "Removed content from " << file;
 }
