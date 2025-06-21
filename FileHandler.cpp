@@ -9,6 +9,11 @@ FileHandler::FileHandler(PATH& filepath) : fsFilePath               (filepath)
     SplitFile(file, vecFileBuffer, StrMessageToDeleteBuffer);
 }
 
+FileHandler::~FileHandler()
+{
+    // Here we need to delete every pointer
+}
+
 void FileHandler::SplitFile(std::fstream& file, std::vector<PATH>& fileBuffer, String& MessageToDeleteBuffer)
 {
     std::cout << "Checking if file is valid" << std::endl;
@@ -20,7 +25,6 @@ void FileHandler::SplitFile(std::fstream& file, std::vector<PATH>& fileBuffer, S
         while (!file.eof())
         {
             getline(file, StrLine);
-            std::cout << StrLine <<std::endl;
 
             // write message to delete in a buffer
             if (StrLine.empty())
@@ -44,20 +48,15 @@ void FileHandler::SplitFile(std::fstream& file, std::vector<PATH>& fileBuffer, S
 bool FileHandler::StartRemovingContentFromFile()
 {
     int nCurrentFile = 1;
-    unsigned int nThreads = std::thread::hardware_concurrency();
-    // if it fails to retrieve the data be safe and use only one core
-    if (nThreads == 0) nThreads = 1;
 
     for (const auto& files : vecFileBuffer)
     {
         // start time
         auto start = std::chrono::high_resolution_clock::now();
 
-
-
-        std::thread WorkerThread (&FileHandler::RemoveContent, this, std::cref(files), std::cref(StrMessageToDeleteBuffer));
-
-
+        // start thread
+        std::thread WorkerThread(&FileHandler::RemoveContent, this, std::cref(files), std::ref(StrMessageToDeleteBuffer));
+        WorkerThread.join();
 
         // stop time
         auto stop = std::chrono::high_resolution_clock::now();
@@ -71,7 +70,7 @@ bool FileHandler::StartRemovingContentFromFile()
     return true;
 }
 
-bool FileHandler::RemoveContent(const String& file, String& messageToDelete)
+bool FileHandler::RemoveContent(const PATH& file, String& messageToDelete)
 {
     std::ifstream fileInput(file);
     std::stringstream buffer;
@@ -91,14 +90,21 @@ bool FileHandler::RemoveContent(const String& file, String& messageToDelete)
         fileInput.close();
     }
 
-    std::cout << buffer.str() << std::endl;
-
-    std::string fileContent = buffer.str();
+    String fileContent = buffer.str();
     size_t pos = fileContent.find(messageToDelete);
+    size_t fileContentLen = fileContent.length();
+
     while (pos != std::string::npos)
     {
         fileContent.erase(pos, messageToDelete.length());
         pos = fileContent.find(messageToDelete);
+    }
+
+    if (fileContentLen >= fileContent.length())
+    {
+        // nothing to do because the give string wasn't found
+        std::cout << "Give string was not found in file: " << file << std::endl;
+        return true;
     }
 
     std::ofstream fileOutput(file, std::ios::trunc);
