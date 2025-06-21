@@ -72,6 +72,10 @@ bool FileHandler::StartRemovingContentFromFile()
 
 bool FileHandler::RemoveContent(const PATH& file, String& messageToDelete)
 {
+    // ChatGPT:
+    // std::lock_guard ensures the mutex is automatically released when the function exits.
+    // This prevents data races and corruption.
+    std::lock_guard<std::mutex> lock(fileMutex);
     std::ifstream fileInput(file);
     std::stringstream buffer;
 
