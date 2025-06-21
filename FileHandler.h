@@ -15,16 +15,16 @@ typedef std::string String;
 class FileHandler {
 public:
     FileHandler(PATH& filepath);
-    void SplitFile(std::fstream& file, std::vector<String>& fileBuffer, String& MessageToDeleteBuffer);
+    void SplitFile(std::fstream& file, std::vector<PATH>& fileBuffer, String& MessageToDeleteBuffer);
     bool StartRemovingContentFromFile();
-    void RemoveContent(String& file, String& messageToDelete);
+    bool RemoveContent(const String& file, String& messageToDelete);
 
     String GetMessageToDeleteBuffer() { return StrMessageToDeleteBuffer; }
-    std::vector<String> GetFileBuffer() { return vecFileBuffer; }
+    std::vector<PATH> GetFileBuffer() { return vecFileBuffer; }
 
 private:
     PATH fsFilePath;
     bool bMessageToDelete;
     String StrMessageToDeleteBuffer;
-    std::vector<String> vecFileBuffer;
+    std::vector<PATH> vecFileBuffer;
 };

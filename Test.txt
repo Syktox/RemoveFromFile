@@ -1,5 +1,0 @@
-Test2.txt
-Test3.txt
-
-Hallo ich möchte diesen Text aus allen Dateien löschen.
-Ich wenn ich weiß, dass wird nichts mehr.

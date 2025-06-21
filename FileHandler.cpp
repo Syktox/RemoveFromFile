@@ -9,7 +9,7 @@ FileHandler::FileHandler(PATH& filepath) : fsFilePath               (filepath)
     SplitFile(file, vecFileBuffer, StrMessageToDeleteBuffer);
 }
 
-void FileHandler::SplitFile(std::fstream& file, std::vector<String>& fileBuffer, String& MessageToDeleteBuffer)
+void FileHandler::SplitFile(std::fstream& file, std::vector<PATH>& fileBuffer, String& MessageToDeleteBuffer)
 {
     std::cout << "Checking if file is valid" << std::endl;
     if (file.is_open())
@@ -20,21 +20,20 @@ void FileHandler::SplitFile(std::fstream& file, std::vector<String>& fileBuffer,
         while (!file.eof())
         {
             getline(file, StrLine);
-
-            // logic for file / add new file when its not a empty line
-            if (StrLine.empty())
-                bMessageToDelete = true;
-            else
-                StrLine.append("\n");
+            std::cout << StrLine <<std::endl;
 
             // write message to delete in a buffer
+            if (StrLine.empty())
+                bMessageToDelete = true;
+
             if (bMessageToDelete)
                 MessageToDeleteBuffer += StrLine;
             else
             {
+                // logic for file / add new file when it's not an empty line
                 fileBuffer.emplace_back(StrLine);
+                StrLine.append("\n");
             }
-
         }
         file.close();
     }
@@ -45,12 +44,22 @@ void FileHandler::SplitFile(std::fstream& file, std::vector<String>& fileBuffer,
 bool FileHandler::StartRemovingContentFromFile()
 {
     int nCurrentFile = 1;
+    unsigned int nThreads = std::thread::hardware_concurrency();
+    // if it fails to retrieve the data be safe and use only one core
+    if (nThreads == 0) nThreads = 1;
 
-    for (auto& files : vecFileBuffer)
+    for (const auto& files : vecFileBuffer)
     {
+        // start time
         auto start = std::chrono::high_resolution_clock::now();
-        std::thread RemoveContentThread(&FileHandler::RemoveContent, this, std::ref(files), std::ref(StrMessageToDeleteBuffer));
-        RemoveContentThread.join();
+
+
+
+        std::thread WorkerThread (&FileHandler::RemoveContent, this, std::cref(files), std::cref(StrMessageToDeleteBuffer));
+
+
+
+        // stop time
         auto stop = std::chrono::high_resolution_clock::now();
         std::cout << "Thread took " << (stop - start) << " for this task" << std::endl;
 
@@ -62,18 +71,45 @@ bool FileHandler::StartRemovingContentFromFile()
     return true;
 }
 
-void FileHandler::RemoveContent(String& file, String& messageToDelete)
+bool FileHandler::RemoveContent(const String& file, String& messageToDelete)
 {
-    std::fstream fileToRemoveContent(file, std::ios::in | std::ios::out);
-    if (fileToRemoveContent.is_open())
-    {
-        char ch;
-        while (fileToRemoveContent.get(ch))
-        {
-            std::cout << messageToDelete[0];
-        }
+    std::ifstream fileInput(file);
+    std::stringstream buffer;
 
-        fileToRemoveContent.close();
+    // Error Message when it fails
+    if (fileInput.bad())
+    {
+        std::cout << "File: " << file << " invalid!" << std::endl;
+        return false;
     }
-    std::cout << "Removed content from " << file;
+
+    if (fileInput.is_open())
+    {
+        std::cout << "Opened file - Reading Content" << std::endl;
+        // Read entire file into buffer
+        buffer << fileInput.rdbuf();
+        fileInput.close();
+    }
+
+    std::cout << buffer.str() << std::endl;
+
+    std::string fileContent = buffer.str();
+    size_t pos = fileContent.find(messageToDelete);
+    while (pos != std::string::npos)
+    {
+        fileContent.erase(pos, messageToDelete.length());
+        pos = fileContent.find(messageToDelete);
+    }
+
+    std::ofstream fileOutput(file, std::ios::trunc);
+    if (!fileOutput)
+    {
+        std::cout << "Failed to open file for writing: " << file << std::endl;
+        return false;
+    }
+
+    fileOutput << fileContent;
+    fileOutput.close();
+    std::cout << "Removed content and updated file." << std::endl;
+    return true;
 }

@@ -7,6 +7,17 @@ add_executable(RemoveElementsFromFile main.cpp
         FileHandler.cpp
         FileHandler.h)
 
-configure_file(Test.txt Test.txt COPYONLY)
-configure_file(Test2.txt Test2.txt COPYONLY)
-configure_file(Test3.txt Test3.txt COPYONLY)
+# Create a runtime data directory
+set(DATA_DIR ${CMAKE_BINARY_DIR}/data)
+
+file(MAKE_DIRECTORY ${DATA_DIR})
+
+# Copy test files once during the build
+foreach(file IN LISTS Test.txt Test2.txt Test3.txt)
+    add_custom_command(
+            TARGET RemoveElementsFromFile PRE_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_SOURCE_DIR}/data/${file}
+            ${DATA_DIR}/${file}
+    )
+endforeach()
