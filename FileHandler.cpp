@@ -16,10 +16,10 @@ FileHandler::~FileHandler()
 
 void FileHandler::SplitFile(std::fstream& file, std::vector<PATH>& fileBuffer, String& MessageToDeleteBuffer)
 {
-    std::cout << "Checking if file is valid" << std::endl;
+    std::printf("Checking if file is valid\n");
     if (file.is_open())
     {
-        std::cout << "File valid!\n" << std::endl;
+        std::printf("File valid\n");
         String StrLine;
 
         while (!file.eof())
@@ -42,7 +42,7 @@ void FileHandler::SplitFile(std::fstream& file, std::vector<PATH>& fileBuffer, S
         file.close();
     }
     else
-        std::cout << "File invalid!" << std::endl;
+        std::printf("File valid!\n");
 }
 
 bool FileHandler::StartRemovingContentFromFile()
@@ -60,10 +60,12 @@ bool FileHandler::StartRemovingContentFromFile()
 
         // stop time
         auto stop = std::chrono::high_resolution_clock::now();
-        std::cout << "Thread took " << (stop - start) << " for this task" << std::endl;
+        auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
+
+        std::printf("Thread took %lld ms for this task\n", duration);
 
         // Finished File output
-        std::cout << "Finished File: " << nCurrentFile << "/" << vecFileBuffer.size() << "\n" << std::endl;
+        std::printf("Finished File: %d / %d\n", nCurrentFile, (int) vecFileBuffer.size());
         nCurrentFile++;
     }
 
@@ -82,13 +84,13 @@ bool FileHandler::RemoveContent(const PATH& file, String& messageToDelete)
     // Error Message when it fails
     if (fileInput.bad())
     {
-        std::cout << "File: " << file << " invalid!" << std::endl;
+        std::printf("File: %s invalid!\n", file.c_str());
         return false;
     }
 
     if (fileInput.is_open())
     {
-        std::cout << "Opened file - Reading Content" << std::endl;
+        std::printf("Opened file - Reading Content");
         // Read entire file into buffer
         buffer << fileInput.rdbuf();
         fileInput.close();
@@ -107,19 +109,19 @@ bool FileHandler::RemoveContent(const PATH& file, String& messageToDelete)
     if (fileContentLen >= fileContent.length())
     {
         // nothing to do because the give string wasn't found
-        std::cout << "Give string was not found in file: " << file << std::endl;
+        std::printf("\nGive string was not found in file: %s\n", file.c_str());
         return true;
     }
 
     std::ofstream fileOutput(file, std::ios::trunc);
     if (!fileOutput)
     {
-        std::cout << "Failed to open file for writing: " << file << std::endl;
+        std::printf("\nFailed to open file for writing: %s\n", file.c_str());
         return false;
     }
 
     fileOutput << fileContent;
     fileOutput.close();
-    std::cout << "Removed content and updated file." << std::endl;
+    std::printf("\nRemoved content and updated file\n");
     return true;
 }

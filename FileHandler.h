@@ -2,7 +2,7 @@
 
 #include <filesystem>
 #include <fstream>
-#include <iostream>
+#include <print>
 #include <vector>
 #include <thread>
 #include <chrono>
@@ -15,11 +15,11 @@ typedef std::string String;
 
 class FileHandler {
 public:
-    FileHandler(PATH& filepath);
+    explicit FileHandler(PATH& filepath);
     virtual ~FileHandler(); // virtual in case someone changes the class to an interface or abstract.
 
     /* Function takes a file and splits it into paths to files and stores it in the vec
-     * and finds the message that should be delete.
+     * and finds the message that should be deleted.
      * std::vector<PATH>& - vector of paths to files where a specific message should be deleted
      * String& - message that should be deleted in the files
      * */

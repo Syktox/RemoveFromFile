@@ -9,7 +9,7 @@ int main() {
 
     FileHandler rFileHandler(filePath);
     if ( rFileHandler.StartRemovingContentFromFile() )
-        std::cout << "\n***** Finished removing content *****" << std::endl;
+        std::printf("\n***** Finished removing content *****\n");
 
     return 0;
 }
