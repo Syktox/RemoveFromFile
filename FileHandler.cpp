@@ -9,10 +9,7 @@ FileHandler::FileHandler(PATH& filepath) : fsFilePath               (filepath)
     SplitFile(file, vecFileBuffer, StrMessageToDeleteBuffer);
 }
 
-FileHandler::~FileHandler()
-{
-    // Here we need to delete every pointer
-}
+FileHandler::~FileHandler() = default;
 
 void FileHandler::SplitFile(std::fstream& file, std::vector<PATH>& fileBuffer, String& MessageToDeleteBuffer)
 {

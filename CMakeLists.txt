@@ -9,6 +9,6 @@ add_executable(RemoveElementsFromFile
         FileHandler.cpp
         FileHandler.h)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+# set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin) removed it for now
 # NO data copying or installation logic needed in CMakeLists.txt anymore for this approach.
 # You just need to ensure your C++ code knows where to find the 'data' folder.

@@ -1,0 +1,3 @@
+/Users/syktox/Documents/Projekte/RemoveElementsFromFile/build/CMakeFiles/RemoveElementsFromFile.dir
+/Users/syktox/Documents/Projekte/RemoveElementsFromFile/build/CMakeFiles/edit_cache.dir
+/Users/syktox/Documents/Projekte/RemoveElementsFromFile/build/CMakeFiles/rebuild_cache.dir
