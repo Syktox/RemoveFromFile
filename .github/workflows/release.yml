@@ -1,4 +1,4 @@
-name: Build and Release
+name: Build and Release Windows Binary
 
 on:
   push:
@@ -6,18 +6,20 @@ on:
       - 'v*'
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  build-windows:
+    runs-on: windows-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install g++
-        run: sudo apt update && sudo apt install -y g++
+      - name: Install g++ (via MSYS2)
+        run: |
+          choco install mingw
+          refreshenv
 
-      - name: Build binary
-        run: g++ main.cpp -o my_program
+      - name: Build Windows binary
+        run: g++ main.cpp -o RemoveElementsFromFile.exe
 
       - name: Upload release binary
         uses: softprops/action-gh-release@v2
